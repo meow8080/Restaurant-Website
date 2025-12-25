@@ -8,6 +8,36 @@ function Reservations() {
 
   const today = new Date().toISOString().split("T")[0];
 
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setDate(selectedDate);
+
+    if (selectedDate < today) {
+      setError("Please select a future date.");
+    } else {
+      setError("");
+    }
+  };
+
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    if (!date) {
+      setTime(selectedTime);
+      return;
+    }
+    if (date === today) {
+      const currentTime = new Date().toTimeString().slice(0, 5);
+
+      if (selectedTime < currentTime) {
+        setError("Please select a future time.");
+        return;
+      }
+    }
+
+    setTime(selectedTime);
+    setError("");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -16,16 +46,7 @@ function Reservations() {
       return;
     }
 
-    const now = new Date();
-    const selectedDateTime = new Date(`${date}T${time}`);
-
-    if (selectedDateTime <= now) {
-      setError("Please select a future date and time.");
-      return;
-    }
-
     alert(`Reservation booked for ${name} on ${date} at ${time}`);
-
     setName("");
     setDate("");
     setTime("");
@@ -53,15 +74,14 @@ function Reservations() {
             type="date"
             value={date}
             min={today}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={handleDateChange}
             className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
 
           <input
             type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={handleTimeChange}
             className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
@@ -72,7 +92,7 @@ function Reservations() {
 
           <button
             type="submit"
-            className="bg-amber-900 text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-950 transition-all w-full"
+            className="bg-amber-900 text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-950 transition-all w-full active:scale-95"
           >
             Submit Reservation
           </button>
