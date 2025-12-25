@@ -81,6 +81,7 @@ function Reservations() {
 
           <input
             type="time"
+            value={time}
             onChange={handleTimeChange}
             className="w-full p-3 rounded-lg bg-gray-100"
             required
