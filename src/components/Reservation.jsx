@@ -8,53 +8,40 @@ function Reservations() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const validateDateTime = (selectedDate, selectedTime) => {
-    if (!selectedDate || !selectedTime) return true;
-
+  const handleTimeChange = (e) => {
+    const val = e.target.value; 
+    setTime(val); 
     const now = new Date();
-    const currentTimeString = now.toTimeString().slice(0, 5); 
+    const currentTime = now.getHours().toString().padStart(2, '0') + ":" + 
+                        now.getMinutes().toString().padStart(2, '0');
 
-    if (selectedDate === today && selectedTime < currentTimeString) {
-      setError("Please select a future time.");
-      return false;
-    }
-    
-    setError("");
-    return true;
-  };
-
-  const handleDateChange = (e) => {
-    const newDate = e.target.value;
-    setDate(newDate);
-    if (newDate < today) {
-      setError("Please select a future date.");
+    if (date === today && val < currentTime && val !== "") {
+      setError("Note: This time has already passed.");
     } else {
       setError("");
-      if (time) validateDateTime(newDate, time);
     }
-  };
-
-  const handleTimeChange = (e) => {
-    const newTime = e.target.value;
-    setTime(newTime); 
-    validateDateTime(date, newTime); 
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validateDateTime(date, time)) return;
-
     if (!name || !date || !time) {
-      setError("All fields are required.");
+      setError("Please fill in all fields.");
+      return;
+    }
+    const now = new Date();
+    const currentTime = now.getHours().toString().padStart(2, '0') + ":" + 
+                        now.getMinutes().toString().padStart(2, '0');
+    
+    if (date === today && time < currentTime) {
+      setError("Cannot book a reservation in the past.");
       return;
     }
 
-    alert(`Reservation booked for ${name} on ${date} at ${time}`);
-    setName(""); setDate(""); setTime(""); setError("");
+    alert(`Success! Reserved for ${name} at ${time}`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-300 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-300 flex items-center fade-in justify-center px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-amber-950 text-center mb-6">Reserve a Table</h1>
 
@@ -64,7 +51,7 @@ function Reservations() {
             placeholder="Your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-100 border focus:ring-2 focus:ring-amber-900 outline-none"
+            className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
 
@@ -72,26 +59,23 @@ function Reservations() {
             type="date"
             value={date}
             min={today}
-            onChange={handleDateChange}
-            className="w-full p-3 rounded-lg bg-gray-100 border outline-none"
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
 
           <input
             type="time"
             value={time}
-            onChange={handleTimeChange}
-            onBlur={(e) => validateDateTime(date, e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-100 border outline-none"
+            onInput={handleTimeChange}
+            onChange={handleTimeChange} 
+            className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
 
           {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
 
-          <button
-            type="submit"
-            className="bg-amber-900 text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-950 transition-all w-full active:scale-95"
-          >
+          <button type="submit" className="bg-amber-900 text-white font-semibold px-6 py-3 rounded-lg w-full">
             Submit Reservation
           </button>
         </form>
