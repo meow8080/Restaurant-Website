@@ -8,38 +8,41 @@ function Reservations() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const handleDateChange = (e) => {
-    const selectedDate = e.target.value;
-    setDate(selectedDate);
+  const validateDateTime = (selectedDate, selectedTime) => {
+    if (!selectedDate || !selectedTime) return true;
 
-    if (selectedDate < today) {
+    const now = new Date();
+    const currentTimeString = now.toTimeString().slice(0, 5); 
+
+    if (selectedDate === today && selectedTime < currentTimeString) {
+      setError("Please select a future time.");
+      return false;
+    }
+    
+    setError("");
+    return true;
+  };
+
+  const handleDateChange = (e) => {
+    const newDate = e.target.value;
+    setDate(newDate);
+    if (newDate < today) {
       setError("Please select a future date.");
     } else {
       setError("");
+      if (time) validateDateTime(newDate, time);
     }
   };
 
   const handleTimeChange = (e) => {
-    const selectedTime = e.target.value;
-    if (!date) {
-      setTime(selectedTime);
-      return;
-    }
-    if (date === today) {
-      const currentTime = new Date().toTimeString().slice(0, 5);
-
-      if (selectedTime < currentTime) {
-        setError("Please select a future time.");
-        return;
-      }
-    }
-
-    setTime(selectedTime);
-    setError("");
+    const newTime = e.target.value;
+    setTime(newTime); 
+    validateDateTime(date, newTime); 
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateDateTime(date, time)) return;
 
     if (!name || !date || !time) {
       setError("All fields are required.");
@@ -47,18 +50,13 @@ function Reservations() {
     }
 
     alert(`Reservation booked for ${name} on ${date} at ${time}`);
-    setName("");
-    setDate("");
-    setTime("");
-    setError("");
+    setName(""); setDate(""); setTime(""); setError("");
   };
 
   return (
-    <div className="min-h-screen bg-gray-300 flex items-center fade-in justify-center px-4">
+    <div className="min-h-screen bg-gray-300 flex items-center justify-center px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-amber-950 text-center mb-6">
-          Reserve a Table
-        </h1>
+        <h1 className="text-3xl font-bold text-amber-950 text-center mb-6">Reserve a Table</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -66,7 +64,7 @@ function Reservations() {
             placeholder="Your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-100"
+            className="w-full p-3 rounded-lg bg-gray-100 border focus:ring-2 focus:ring-amber-900 outline-none"
             required
           />
 
@@ -75,7 +73,7 @@ function Reservations() {
             value={date}
             min={today}
             onChange={handleDateChange}
-            className="w-full p-3 rounded-lg bg-gray-100"
+            className="w-full p-3 rounded-lg bg-gray-100 border outline-none"
             required
           />
 
@@ -83,13 +81,12 @@ function Reservations() {
             type="time"
             value={time}
             onChange={handleTimeChange}
-            className="w-full p-3 rounded-lg bg-gray-100"
+            onBlur={(e) => validateDateTime(date, e.target.value)}
+            className="w-full p-3 rounded-lg bg-gray-100 border outline-none"
             required
           />
 
-          {error && (
-            <p className="text-red-600 text-sm font-medium">{error}</p>
-          )}
+          {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
 
           <button
             type="submit"
