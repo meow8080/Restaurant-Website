@@ -54,7 +54,7 @@ function Reservations() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-300 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-300 flex items-center fade-in justify-center px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-amber-950 text-center mb-6">
           Reserve a Table
