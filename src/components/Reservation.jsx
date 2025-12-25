@@ -37,7 +37,7 @@ function Reservations() {
       return;
     }
 
-    alert(`Success! Reserved for ${name} at ${time}`);
+    alert(`Success! Reserved for ${name} on ${date} at ${time}`);
   };
 
   return (
