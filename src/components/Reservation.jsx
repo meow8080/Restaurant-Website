@@ -7,43 +7,46 @@ function Reservations() {
   const [error, setError] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
-  const currentTime = new Date().toTimeString().slice(0, 5);
-  const handleDateChange = (value) => {
-    setDate(value);
-    setTime("");
 
-    if (value < today) {
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setDate(selectedDate);
+
+    if (selectedDate < today) {
       setError("Please select a future date.");
     } else {
       setError("");
     }
   };
-  const handleTimeChange = (value) => {
-    setTime(value);
 
-    if (date === today && value < currentTime) {
-      setError("Please select a future time.");
-    } else {
-      setError("");
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    if (!date) {
+      setTime(selectedTime);
+      return;
     }
+    if (date === today) {
+      const currentTime = new Date().toTimeString().slice(0, 5);
+
+      if (selectedTime < currentTime) {
+        setError("Please select a future time.");
+        return;
+      }
+    }
+
+    setTime(selectedTime);
+    setError("");
   };
 
-  // SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (date < today) {
-      setError("Please select a future date.");
-      return;
-    }
-
-    if (date === today && time < currentTime) {
-      setError("Please select a future time.");
+    if (!name || !date || !time) {
+      setError("All fields are required.");
       return;
     }
 
     alert(`Reservation booked for ${name} on ${date} at ${time}`);
-
     setName("");
     setDate("");
     setTime("");
@@ -51,7 +54,7 @@ function Reservations() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-300 flex items-center justify-center px-4 fade-in">
+    <div className="min-h-screen bg-gray-300 flex items-center justify-center px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-amber-950 text-center mb-6">
           Reserve a Table
@@ -63,27 +66,37 @@ function Reservations() {
             placeholder="Your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200"
+            className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
+
           <input
             type="date"
             value={date}
             min={today}
             onChange={handleDateChange}
-            className="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200"
+            className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
+
           <input
             type="time"
             value={time}
-            step="60"
-            min={date === today ? currentTime : "00:00"}
             onChange={handleTimeChange}
-            className="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200"
+            className="w-full p-3 rounded-lg bg-gray-100"
             required
           />
-          <button type="submit" disabled={!!error} className={`w-full font-semibold px-6 py-3 rounded-lg transition-all duration-300 ${error ? "bg-gray-400 cursor-not-allowed" : "bg-amber-900 text-white hover:bg-red-950 hover:scale-105 active:scale-95"}`}>Submit Reservation</button>
+
+          {error && (
+            <p className="text-red-600 text-sm font-medium">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            className="bg-amber-900 text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-950 transition-all w-full active:scale-95"
+          >
+            Submit Reservation
+          </button>
         </form>
       </div>
     </div>
