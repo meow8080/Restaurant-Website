@@ -70,7 +70,7 @@ function Reservations() {
             type="date"
             value={date}
             min={today}
-            onChange={(e) => handleDateChange(e.target.value)}
+            onChange={handleDateChange}
             className="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200"
             required
           />
