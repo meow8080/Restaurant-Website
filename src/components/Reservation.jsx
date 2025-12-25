@@ -79,7 +79,7 @@ function Reservations() {
             value={time}
             step="60"
             min={date === today ? currentTime : "00:00"}
-            onChange={(e) => handleTimeChange(e.target.value)}
+            onChange={handleTimeChange}
             className="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200"
             required
           />
